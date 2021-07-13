@@ -19,7 +19,18 @@ def format_date(d):
 @bp.route("/search/<field>/<value>")
 def search(field, value):
     # TBD
-    return ""
+    conn = db.get_db()
+    cursor = conn.cursor()
+
+    cursor.execute(f"select p.id, p.name, p.bought, p.sold, a.name from pet p, tag t, tags_pets tp, animal a where t.name = '{value}' and p.id = tp.pet and tp.tag = t.id and a.id = p.species")
+    res = cursor.fetchall()
+
+    data = dict(field = field,
+            value = value,
+            pets = res,
+            )
+    print(res)
+    return render_template('search.html', **data)
 
 @bp.route("/")
 def dashboard():
